@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushBut
 from PySide6.QtGui import QFont, QPixmap
 from PySide6.QtCore import Qt
 import sys
-
+#conexion a la base de datos
 uri = "mongodb+srv://fernandezlucasg4:1wtLRd6gxThC1w0p@cluster0.ladvsxc.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
