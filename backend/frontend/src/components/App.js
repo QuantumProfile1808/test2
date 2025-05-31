@@ -1,5 +1,10 @@
 import React, { Component } from "react";
 import { createRoot } from "react-dom/client";
+import Homepage from "./Homepage";
+// This is the main App component that renders the Homepage component
+import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
+import Page2 from "./Page2";
+import Page3 from "./page3";
 
 export default class App extends Component {
   constructor(props) {
@@ -9,11 +14,10 @@ export default class App extends Component {
   render() {
     return (
       <div>
-        <h1>Welcome to the React App</h1>
-        <p>This is a simple React application.</p>
+        <Homepage />;
       </div>
     );
-  }
+  };
 }
 
 const appdiv = document.getElementById("app");
