@@ -8,8 +8,8 @@ export default class Page3 extends Component {
   render() {
     return (
       <div>
-        <h1>Welcome to the Page3</h1>
-        <p>This is the homepage of our React application.</p>
+        <h1>Welcome to the Page4</h1>
+        <p>This is the homepage of our Reactdasdada application.</p>
       </div>
     );
   }
