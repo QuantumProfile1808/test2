@@ -6,10 +6,28 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
 
+
+
 class RoomView(generics.ListAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 #
+
+class getRoomView(APIView):
+    serializer_class = RoomSerializer
+    lookup_url_kwarg = 'code'
+
+
+    def get(self, request, format=None):
+        code = request.GET.get(self.lookup_url_kwarg)
+        if code is not None:
+            rooms = Room.objects.filter(code=code)
+            if rooms.exists():
+                data = RoomSerializer(rooms[0]).data
+                data['is_host'] = self.request.session.session_key == rooms[0].host
+                return Response(data, status=status.HTTP_200_OK)
+            return Response({'Bad Request': 'Room not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"Bad Request": "Code parameter not found in request"}, status=status.HTTP_400_BAD_REQUEST)
 class CreateRoomView (APIView):
     serializer_class = createRoomSerializer
 
