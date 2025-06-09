@@ -1,41 +1,83 @@
 import React, { Component } from "react";
-import RoomWrapper from "./RoomWrapper";
-
+import { Grid, Button, Typography } from "@material-ui/core";
 
 export default class Room extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        VotesToSkip: 2,
-        GuestCanPause: false,
-        isHost: false,
+  constructor(props) {
+    super(props);
+    this.state = {
+      votesToSkip: 2,
+      guestCanPause: false,
+      isHost: false,
     };
-    this.roomCode = this.props.roomCode;;
+    this.roomCode = this.props.roomCode;
+    this.getRoomDetails();
+    this.leaveButtonPressed = this.leaveButtonPressed.bind(this);
   }
 
-      componentDidMount() {
-        this.getRoomDetails();
-    }
-
-    getRoomDetails() {
-      fetch('/api/get-room?code=' + this.roomCode)
-        .then((response) => response.json())
-        .then((data) => {
-          this.setState({
-            VotesToSkip: data.votes_to_skip,
-            GuestCanPause: data.guest_can_pause,
-            isHost: data.is_host,
-          });
+  getRoomDetails() {
+    return fetch("/api/get-room" + "?code=" + this.roomCode)
+      .then((response) => {
+        if (!response.ok) {
+          this.props.leaveRoomCallback();
+          // this.props.history.push("/"); // Elimina esto si usas React Router v6
+        }
+        return response.json();
+      })
+      .then((data) => {
+        this.setState({
+          votesToSkip: data.votes_to_skip,
+          guestCanPause: data.guest_can_pause,
+          isHost: data.is_host,
         });
-    }
+      });
+  }
 
-    render() {
-        return( <div>
-            <h3>Room Code: {this.roomCode}</h3>
-            <p>Votes {this.state.VotesToSkip} </p>
-            <p>Guest Can Pause: {this.state.GuestCanPause.toString()}</p>
-            <p>Host: {this.state.isHost.toString()}</p>
-        </div>
-        );
+leaveButtonPressed() {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: this.roomCode }),
+  };
+  fetch("/api/leave-room", requestOptions).then((_response) => {
+    if (this.props.leaveRoomCallback) {
+      this.props.leaveRoomCallback();
     }
+  });
+}
+
+  render() {
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <Typography variant="h4" component="h4">
+            Code: {this.roomCode}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Votes: {this.state.votesToSkip}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Guest Can Pause: {this.state.guestCanPause.toString()}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Host: {this.state.isHost.toString()}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={this.leaveButtonPressed}
+          >
+            Leave Room
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  }
 }

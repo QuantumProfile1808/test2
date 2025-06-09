@@ -8,12 +8,37 @@ export default class Page3 extends Component {
     this.state = {
       RoomCode: '',
       error: ''
-
     };
     this.handleTextFieldChange = this.handleTextFieldChange.bind(this);
     this.roombuttonPressed = this.roombuttonPressed.bind(this);
   }
 
+  handleTextFieldChange(e) {
+    this.setState({ RoomCode: e.target.value });
+  }
+
+  roombuttonPressed() {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code: this.state.RoomCode
+      })
+    };
+    fetch('/api/join-room/', requestOptions)
+      .then((response) => {
+        if (response.ok) {
+          // Usa navigate si tienes el wrapper, si no, reemplaza por window.location
+          this.props.navigate(`/room/${this.state.RoomCode}`);
+        } else {
+          this.setState({ error: 'Room not found' });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({ error: 'Error connecting to server' });
+      });
+  }
   render() {
     return (
       <Grid container spacing={1} direction="column" alignItems="center" justifyContent="center" style={{ minHeight: "100vh" }}>
@@ -33,9 +58,9 @@ export default class Page3 extends Component {
             onChange={this.handleTextFieldChange}
           />
         </Grid>
-        <Grid container spacing={1} alignItems="center" justifyContent="center" item xs={12}>
+        <Grid container spacing={1} alignItems="center" justifyContent="center">
           <Grid item>
-            <Button variant="contained" color="primary" onClick={this.roombuttonPressed} component={Link} to={this.roombuttonPressed}>
+            <Button variant="contained" color="primary" onClick={this.roombuttonPressed}>
               Enter Room
             </Button>
           </Grid>
@@ -48,12 +73,4 @@ export default class Page3 extends Component {
       </Grid>
     );
   }
-
-  handleTextFieldChange(e){
-    this.setState({RoomCode: e.target.value});
-  }
-
-  roombuttonPressed() {
-    console.log(this.state.RoomCode);
-  };
 }
